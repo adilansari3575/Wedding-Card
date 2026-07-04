@@ -95,7 +95,7 @@ const Hero = ({ isOpen }) => {
     const percentage = (transparentPixels / totalPixels) * 100;
 
     // Reveal at 55% to make it feel smoother
-    if (percentage > 55) {
+    if (percentage > 15) {
       setIsCleared(true);
     }
   };
@@ -138,7 +138,7 @@ const Hero = ({ isOpen }) => {
   };
 
   const particles = Array.from({ length: 30 });
-  const boomParticles = Array.from({ length: 60 });
+  const boomParticles = Array.from({ length: 180 });
 
   return (
     <>
@@ -248,7 +248,7 @@ const Hero = ({ isOpen }) => {
               className="flex flex-col items-center"
             >
               <h1 className="text-6xl md:text-8xl font-royal text-[#D4AF37] uppercase tracking-[0.1em] font-light drop-shadow-[0_2px_10px_rgba(212,175,55,0.2)]">
-                Soyal 
+                Soyal
               </h1>
 
               <div className="flex items-center justify-center w-full my-4">
@@ -260,7 +260,7 @@ const Hero = ({ isOpen }) => {
               </div>
 
               <h1 className="text-6xl md:text-8xl font-royal text-[#D4AF37] uppercase tracking-[0.1em] font-light drop-shadow-[0_2px_10px_rgba(212,175,55,0.2)]">
-                Zeenat 
+                Zeenat
               </h1>
             </motion.div>
 
@@ -375,28 +375,45 @@ const Hero = ({ isOpen }) => {
             {/* Celebration Boom */}
             <AnimatePresence>
               {isCleared && (
-                <motion.div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center overflow-visible">
+                <motion.div className="fixed inset-0 z-[9999] pointer-events-none overflow-hidden">
                   {boomParticles.map((_, i) => {
-                    const angle = Math.random() * Math.PI * 2;
-                    const velocity = 80 + Math.random() * 150;
-                    const colors = ["#D4AF37", "#FFFFFF", "#FDF2A6", "#ffb347"];
+                    const colors = [
+                      "#FFD700",
+                      "#FDF2A6",
+                      "#FFFFFF",
+                      "#FF69B4",
+                      "#6EC6FF",
+                      "#7CFFB2",
+                      "#FFA500",
+                    ];
+
                     return (
                       <motion.div
-                        key={`boom-${i}`}
-                        initial={{ x: 0, y: 0, scale: 0, opacity: 1 }}
+                        key={i}
+                        initial={{
+                          x: Math.random() * window.innerWidth,
+                          y: -80,
+                          opacity: 1,
+                          rotate: Math.random() * 360,
+                        }}
                         animate={{
-                          x: Math.cos(angle) * velocity,
-                          y: Math.sin(angle) * velocity + 30, // slight gravity
-                          scale: [0, Math.random() * 1 + 0.5, 0],
-                          opacity: [1, 1, 0],
+                          y: window.innerHeight + 150,
+                          x:
+                            Math.random() * window.innerWidth +
+                            (Math.random() * 100 - 50),
+                          rotate: Math.random() * 1080,
+                          opacity: [1, 1, 1, 0],
                         }}
                         transition={{
-                          duration: 0.8 + Math.random() * 0.6,
-                          ease: "easeOut",
+                          duration: 3 + Math.random() * 2,
+                          ease: "linear",
+                          delay: Math.random() * 0.4,
                         }}
-                        className="absolute w-2 h-2 rounded-full shadow-[0_0_10px_currentColor]"
+                        className="absolute rounded-sm"
                         style={{
-                          backgroundColor:
+                          width: `${3 + Math.random() * 3}px`,
+                          height: `${12 + Math.random() * 10}px`,
+                          background:
                             colors[Math.floor(Math.random() * colors.length)],
                         }}
                       />
@@ -405,7 +422,6 @@ const Hero = ({ isOpen }) => {
                 </motion.div>
               )}
             </AnimatePresence>
-
             {/* Canvas for Scratch Layer */}
             <motion.canvas
               ref={canvasRef}

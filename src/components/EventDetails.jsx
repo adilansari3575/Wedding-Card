@@ -46,18 +46,18 @@ const EventDetails = () => {
 
   // Timeline Data
   const timelineEvents = [
-    { title: "Haldi Caremony", time: "Oct 25, 2026, 6:30 PM" },
-    { title: "Wedding Ceremony", time: "Oct 26, 2026, 5:00 PM" },
+    { title: "Haldi Caremony", time: "Oct 25, 2026, 6:00 PM" },
+    { title: "Wedding Ceremony", time: "Oct 26, 2026, 11:00 AM" },
     {
       title: "Dinner Reception  {Dawat-E-Walima}",
-      time: "Oct 27, 2026, 7:00 PM",
+      time: "Oct 27, 2026, 11:00 PM",
     },
   ];
 
   const preWeddingEvents = [
     {
       title: "Haldi",
-      time: "Oct 25, 2026, 10:00 AM",
+      time: "Oct 25, 2026, 6:00 PM",
       location: "at Groom's Home",
     },
     {
