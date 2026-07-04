@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Hero = ({ isOpen }) => {
   const [isMuted, setIsMuted] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1000,
-  );
 
   // Audio Ref
   const audioRef = useRef(null);
@@ -16,19 +13,30 @@ const Hero = ({ isOpen }) => {
   const [isCleared, setIsCleared] = useState(false);
   const scratchCounter = useRef(0);
 
-  // Window Resize Logic
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const [ambientParticles] = useState(() => {
+    const width = typeof window !== "undefined" ? window.innerWidth : 1000;
+    const height = typeof window !== "undefined" ? window.innerHeight : 800;
+    return Array.from({ length: 30 }).map((_, i) => ({
+      id: i,
+      xInitial: Math.random() * width,
+      yInitial: height + 20,
+      scale: Math.random() * 0.5 + 0.5,
+      xAnimate: Math.random() * width,
+      xOffset: Math.random() * 100 - 50,
+      opacityAnimate: Math.random() * 0.6 + 0.2,
+      rotate: Math.random() * 360,
+      duration: Math.random() * 12 + 10,
+      delay: Math.random() * 5,
+    }));
+  });
+  const [confettiParticles, setConfettiParticles] = useState([]);
 
   // 1. Audio Play Logic
   useEffect(() => {
     if (isOpen && audioRef.current) {
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
+        playPromise.catch(() => {
           console.log("Autoplay prevented. User interaction needed.");
         });
       }
@@ -96,6 +104,33 @@ const Hero = ({ isOpen }) => {
 
     // Reveal at 55% to make it feel smoother
     if (percentage > 15) {
+      const colors = [
+        "#FFD700",
+        "#FDF2A6",
+        "#FFFFFF",
+        "#FF69B4",
+        "#6EC6FF",
+        "#7CFFB2",
+        "#FFA500",
+      ];
+      const generated = Array.from({ length: 180 }).map((_, i) => {
+        const width = 3 + Math.random() * 3;
+        const height = 12 + Math.random() * 10;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        return {
+          id: i,
+          xInitial: Math.random() * window.innerWidth,
+          rotateInitial: Math.random() * 360,
+          xAnimate: Math.random() * window.innerWidth + (Math.random() * 100 - 50),
+          rotateAnimate: Math.random() * 1080,
+          duration: 3 + Math.random() * 2,
+          delay: Math.random() * 0.4,
+          width,
+          height,
+          color,
+        };
+      });
+      setConfettiParticles(generated);
       setIsCleared(true);
     }
   };
@@ -137,9 +172,6 @@ const Hero = ({ isOpen }) => {
     }
   };
 
-  const particles = Array.from({ length: 30 });
-  const boomParticles = Array.from({ length: 180 });
-
   return (
     <>
       {/* Premium Fonts Import */}
@@ -164,33 +196,30 @@ const Hero = ({ isOpen }) => {
         {/* GLOBAL EFFECTS: Floating Particles */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           {isOpen &&
-            particles.map((_, i) => (
+            ambientParticles.map((p) => (
               <motion.div
-                key={`particle-${i}`}
+                key={`particle-${p.id}`}
                 initial={{
-                  x: Math.random() * windowWidth,
-                  y:
-                    typeof window !== "undefined"
-                      ? window.innerHeight + 20
-                      : 1000,
+                  x: p.xInitial,
+                  y: p.yInitial,
                   opacity: 0,
-                  scale: Math.random() * 0.5 + 0.5,
+                  scale: p.scale,
                 }}
                 animate={{
                   y: -100,
-                  x: `calc(${Math.random() * windowWidth}px + ${Math.random() * 100 - 50}px)`,
-                  opacity: [0, Math.random() * 0.6 + 0.2, 0],
-                  rotate: Math.random() * 360,
+                  x: `calc(${p.xAnimate}px + ${p.xOffset}px)`,
+                  opacity: [0, p.opacityAnimate, 0],
+                  rotate: p.rotate,
                 }}
                 transition={{
-                  duration: Math.random() * 12 + 10,
+                  duration: p.duration,
                   repeat: Infinity,
                   ease: "linear",
-                  delay: Math.random() * 5,
+                  delay: p.delay,
                 }}
                 className="absolute text-[#D4AF37]/30 text-sm md:text-base select-none"
               >
-                {i % 3 === 0 ? "✧" : "❀"}
+                {p.id % 3 === 0 ? "✧" : "❀"}
               </motion.div>
             ))}
         </div>
@@ -376,45 +405,32 @@ const Hero = ({ isOpen }) => {
             <AnimatePresence>
               {isCleared && (
                 <motion.div className="fixed inset-0 z-[9999] pointer-events-none overflow-hidden">
-                  {boomParticles.map((_, i) => {
-                    const colors = [
-                      "#FFD700",
-                      "#FDF2A6",
-                      "#FFFFFF",
-                      "#FF69B4",
-                      "#6EC6FF",
-                      "#7CFFB2",
-                      "#FFA500",
-                    ];
-
+                  {confettiParticles.map((p) => {
                     return (
                       <motion.div
-                        key={i}
+                        key={p.id}
                         initial={{
-                          x: Math.random() * window.innerWidth,
+                          x: p.xInitial,
                           y: -80,
                           opacity: 1,
-                          rotate: Math.random() * 360,
+                          rotate: p.rotateInitial,
                         }}
                         animate={{
                           y: window.innerHeight + 150,
-                          x:
-                            Math.random() * window.innerWidth +
-                            (Math.random() * 100 - 50),
-                          rotate: Math.random() * 1080,
+                          x: p.xAnimate,
+                          rotate: p.rotateAnimate,
                           opacity: [1, 1, 1, 0],
                         }}
                         transition={{
-                          duration: 3 + Math.random() * 2,
+                          duration: p.duration,
                           ease: "linear",
-                          delay: Math.random() * 0.4,
+                          delay: p.delay,
                         }}
                         className="absolute rounded-sm"
                         style={{
-                          width: `${3 + Math.random() * 3}px`,
-                          height: `${12 + Math.random() * 10}px`,
-                          background:
-                            colors[Math.floor(Math.random() * colors.length)],
+                          width: `${p.width}px`,
+                          height: `${p.height}px`,
+                          background: p.color,
                         }}
                       />
                     );

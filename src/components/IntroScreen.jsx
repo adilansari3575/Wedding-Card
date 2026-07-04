@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   motion,
   AnimatePresence,
@@ -7,8 +7,19 @@ import {
   useSpring,
 } from "framer-motion";
 
+const dustParticles = Array.from({ length: 30 }).map((_, i) => ({
+  id: i,
+  top: `${Math.random() * 100}%`,
+  left: `${Math.random() * 100}%`,
+  opacity: Math.random() * 0.4 + 0.1,
+  scale: Math.random() * 0.6 + 0.4,
+  x: [0, Math.random() * 20 - 10, 0],
+  duration: Math.random() * 8 + 6,
+}));
+
 const IntroScreen = ({ isOpen, setIsOpen }) => {
   const [isExploding, setIsExploding] = useState(false);
+  const [fireworkSparks, setFireworkSparks] = useState([]);
 
   // 3D Tilt Logic
   const mouseX = useMotionValue(0);
@@ -35,15 +46,27 @@ const IntroScreen = ({ isOpen, setIsOpen }) => {
   };
 
   const handleTap = () => {
+    const sparks = Array.from({ length: 24 }).map((_, i) => {
+      const angle = (i / 24) * 360;
+      const distance = Math.random() * 100 + 80;
+      const colors = ["#D4AF37", "#FFFFFF", "#FFD700"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const scale = [0, Math.random() * 1.5 + 0.8, 0];
+      return {
+        id: i,
+        x: Math.cos(angle * (Math.PI / 180)) * distance,
+        y: Math.sin(angle * (Math.PI / 180)) * distance + 40,
+        scale,
+        color,
+      };
+    });
+    setFireworkSparks(sparks);
     setIsExploding(true);
     // Shockwave aur firework dikhane ke liye wait
     setTimeout(() => {
       setIsOpen(true);
     }, 800); // Thoda time badhaya for better animation feel
   };
-
-  const particles = Array.from({ length: 24 }); // Increased particles
-  const dustParticles = Array.from({ length: 30 }); // Ambient background particles
 
   return (
     <>
@@ -61,22 +84,22 @@ const IntroScreen = ({ isOpen, setIsOpen }) => {
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden pointer-events-none bg-[#0a0505]">
             {/* Ambient Gold Dust */}
             <div className="absolute inset-0 z-10 pointer-events-none">
-              {dustParticles.map((_, i) => (
+              {dustParticles.map((dust) => (
                 <motion.div
-                  key={`dust-${i}`}
+                  key={`dust-${dust.id}`}
                   initial={{
-                    top: `${Math.random() * 100}%`,
-                    left: `${Math.random() * 100}%`,
-                    opacity: Math.random() * 0.4 + 0.1,
-                    scale: Math.random() * 0.6 + 0.4,
+                    top: dust.top,
+                    left: dust.left,
+                    opacity: dust.opacity,
+                    scale: dust.scale,
                   }}
                   animate={{
                     y: [0, -60, 0],
-                    x: [0, Math.random() * 20 - 10, 0],
+                    x: dust.x,
                     opacity: [0.1, 0.6, 0.1],
                   }}
                   transition={{
-                    duration: Math.random() * 8 + 6,
+                    duration: dust.duration,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
@@ -142,25 +165,19 @@ const IntroScreen = ({ isOpen, setIsOpen }) => {
 
               {/* Advanced Firework Particles */}
               {isExploding &&
-                particles.map((_, i) => {
-                  const angle = (i / particles.length) * 360;
-                  const distance = Math.random() * 100 + 80;
-                  const colors = ["#D4AF37", "#FFFFFF", "#FFD700"];
-                  const color =
-                    colors[Math.floor(Math.random() * colors.length)];
-
+                fireworkSparks.map((spark) => {
                   return (
                     <motion.div
-                      key={`spark-${i}`}
+                      key={`spark-${spark.id}`}
                       initial={{ x: 0, y: 0, scale: 0 }}
                       animate={{
-                        x: Math.cos(angle * (Math.PI / 180)) * distance,
-                        y: Math.sin(angle * (Math.PI / 180)) * distance + 40, // +40 adds a slight gravity fall effect
-                        scale: [0, Math.random() * 1.5 + 0.8, 0],
+                        x: spark.x,
+                        y: spark.y,
+                        scale: spark.scale,
                         opacity: [1, 1, 0],
                       }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
-                      style={{ backgroundColor: color }}
+                      style={{ backgroundColor: spark.color }}
                       className="absolute w-2 h-2 rounded-full shadow-[0_0_15px_2px_currentColor]"
                     />
                   );

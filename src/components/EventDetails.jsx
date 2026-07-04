@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EventDetails = () => {
   // Image Slider Logic
   const images = [
-    "./wedding1.png",
+    "/wedding1.png",
     "/wedding2.png",
     "/wedding3.png",
   ];

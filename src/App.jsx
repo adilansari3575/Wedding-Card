@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import IntroScreen from "./components/IntroScreen";
 import Hero from "./components/Hero";
 import EventDetails from "./components/EventDetails"; // Naya import
