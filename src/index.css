@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  /* Nayi Midnight Red & Gold Theme */
-  --color-wedding-dark: #210a0f; /* Deep Luxurious Burgundy/Red */
-  --color-wedding-gold: #d4af37;
-  --color-wedding-light: #fdfbf7;
+  /* Olive Green & Antique Gold Wedding Theme */
+  --color-wedding-dark: #3f4a32;
+  --color-wedding-olive: #55643e;
+  --color-wedding-gold: #c6a96b;
+  --color-wedding-light: #f5f1e6;
 
   /* Custom fonts */
   --font-heading: "Playfair Display", serif;
